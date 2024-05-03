@@ -1,5 +1,5 @@
 export type DashBoardCardProps = {
   title: string;
-  subtitle: string;
-  description: string;
+  subtitle: string | number;
+  description: string | number;
 };
