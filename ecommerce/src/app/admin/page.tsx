@@ -2,13 +2,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DashBoardCardProps } from "./type";
-import database from "../db/db";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
+import database from "../db/db";
+import { DashBoardCardProps } from "./type";
 
 async function getSalesData() {
   const data = await database.order.aggregate({
@@ -39,6 +38,24 @@ async function getUserData() {
   };
 }
 
+async function getProductData() {
+  const [activeProducts, inactiveProducts] = await Promise.all([
+    database.product.count({
+      where: {
+        isAvailableForPurchase: true,
+      },
+    }),
+
+    database.product.count({
+      where: {
+        isAvailableForPurchase: false,
+      },
+    }),
+  ]);
+
+  return { activeProducts, inactiveProducts };
+}
+
 function DashBoardCard({ title, subtitle, description }: DashBoardCardProps) {
   return (
     <Card>
@@ -52,8 +69,11 @@ function DashBoardCard({ title, subtitle, description }: DashBoardCardProps) {
 }
 
 export default async function AdminDashboard() {
-  const salesData = await getSalesData();
-  const userData = await getUserData();
+  const [userData, salesData, productData] = await Promise.all([
+    getUserData(),
+    getSalesData(),
+    getProductData(),
+  ]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -66,6 +86,13 @@ export default async function AdminDashboard() {
         title={"Customers"}
         subtitle={formatNumber(userData.userCount) + " Users"}
         description={formatCurrency(userData.avarageValuePerUser)}
+      />
+      <DashBoardCard
+        title={"Products"}
+        subtitle={formatNumber(productData.activeProducts) + " Active Products"}
+        description={
+          formatNumber(productData.inactiveProducts) + " Inactive Products"
+        }
       />
     </div>
   );
