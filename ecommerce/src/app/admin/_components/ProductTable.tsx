@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -8,9 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
 
-import { CheckCircle2, MoreVertical, XCircle } from "lucide-react";
-import { formatCurrency, formatNumber } from "@/lib/formatters";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
+import { CheckCircle2, MoreVertical, XCircle } from "lucide-react";
 
 import database from "@/app/db/db";
+import { ActiveToggleDropdownItem, DeleteDropdownItem } from "./ProductActions";
 
 export async function ProductsTable() {
   const products = await database.product.findMany({
@@ -86,7 +86,7 @@ export async function ProductsTable() {
                       Edit
                     </Link>
                   </DropdownMenuItem>
-                  {/* <ActiveToggleDropdownItem
+                  <ActiveToggleDropdownItem
                     id={product.id}
                     isAvailableForPurchase={product.isAvailableForPurchase}
                   />
@@ -94,7 +94,7 @@ export async function ProductsTable() {
                   <DeleteDropdownItem
                     id={product.id}
                     disabled={product._count.orders > 0}
-                  /> */}
+                  />
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableCell>
